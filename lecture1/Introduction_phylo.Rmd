@@ -1,7 +1,7 @@
 ---
 title: "Introduction to phylogenies in R"
-author: "Simon Joly"
-date: "BIO 6008 - Fall 2015"
+author: "Simon Joly and Rutger Vos"
+date: "MeBioDA - Fall 2017"
 output:
   pdf_document:
     highlight: default
@@ -16,11 +16,11 @@ output:
 
 # Introduction
 
-This document represents an introduction to using phylogenies in R. It asssumes that you already know the basics of R. If you don't, you should start by looking at a R tutorial on the web.
+This document introduces working with phylogenies in R. It asssumes that you already know the basics of R. If you don't, you should start by looking at an R tutorial on the web.
 
-The idea with this tutorial is to guide you through different functions in order to give you an idea of what can be done with phylogenies in R. You will of course learn much more tricks in the following classes.
+This tutorial guides you through different functions to give you an idea of what can be done with phylogenies in R. You will of course learn many more tricks in the following classes.
 
-# R ressources
+# R resources
 
 ## R Studio
 
@@ -28,15 +28,15 @@ For this class, you need to install R on your computer. You will also need to in
 
 ## Packages
 
-There are lots of packages for phylogenetic analyses in R. I won't enumerate them all here, but you can have a good idea of the options available by looking at the [phylogenetic R vignette](http://cran.r-project.org/web/views/Phylogenetics.html) maintainned by Brian O'Meara. It is mostly oriented towards phylogenetic comparative methods, but it is a good start.
+There are lots of packages for phylogenetic analyses in R. We won't enumerate them all here, but you will get a good idea of the options available by looking at the [phylogenetic R vignette](http://cran.r-project.org/web/views/Phylogenetics.html) maintained by [Brian O'Meara](http://brianomeara.info/). The vignette is mostly oriented towards phylogenetic comparative methods, but it is a good start.
 
-The most basic package for using trees in R is *ape*, which allows you to read and plot trees.
+The most basic package for using trees in R is *ape*, which allows you to read and plot trees, and do some topological analyses.
 
-# Importing and plotting trees
+# Generating, importing, and plotting trees
 
-## Simulate a tree
+## Generating a tree
 
-Throughout these exercises, we will often use simulated trees, which are very useful for pedagogical purposes. Trees can be simulated using several functions, but here is an example to simulate one tree with 15 species.
+Throughout these exercises, we will often use simulated trees, which are very useful for pedagogical purposes. Trees can be simulated using several functions, but here is an example to simulate one tree with 15 species. (_Question: which key process is missing from this simulator if we want to approximate even the simplest plausible form of diversification?_)
 
 ```{r "Simulate Pure-Birth Tree",message=FALSE}
 require(phytools)
@@ -44,27 +44,28 @@ tree <- pbtree(n=15,nsim=1)
 plot(tree)
 ```
 
-You save the tree in nexus format to a file. But before you do so, it is a good idea to set the working directory to the same folder where your script is saved. You can do that in RStudio in the menu Session>Set Working Directory>To Source File Location.
+You can save such a tree in [Nexus](http://informatics.nescent.org/w/images/8/8b/NEXUS_Final.pdf) format to a file. But before you do so, it is a good idea to set the working directory to the same folder where your script is saved. You can do that in RStudio in the menu `Session > Set Working Directory > To Source File Location`.
 
 ```{r "Save tree file"}
 require(ape)
-write.nexus(tree, file="My_first_tree.tre")
+write.nexus(tree, file="My_first_tree.nex")
 ```
 
 ## Simulating characters
 
-Characters can also be easily simulated in R. For instance, you could simulate a character using a Brownian Motion (BM) model using the following code.
+Characters can also be easily simulated in R. For instance, you can simulate a continuous character under a [Brownian Motion (BM)](https://en.wikipedia.org/wiki/Brownian_motion) model using the following code:
 
-```{r "Simulate continous character"}
-trait1 <- fastBM(tree, sig2=0.01, nsim=1, internal=FALSE)
-# To get trait values for tree tips:
-trait1
+```{r "Simulate continuous character"}
+char1 <- fastBM(tree, sig2=0.01, nsim=1, internal=FALSE)
+# To get character values for tree tips:
+char1
 ```
 
-Now, let's save this trait to a file to pretend it is our original data.
+(_Question: if we are looking at form and function, is BM really a realistic model of how functional diversity is generated?_)
+Now, let's save this character to a file to pretend it is our original data.
 
-```{r "Write trait to file"}
-write.table(matrix(trait1,ncol=1,dimnames=list(names(trait1),"trait1")), file="mytrait.csv", sep=";")
+```{r "Write character to file"}
+write.table(matrix(char1,ncol=1,dimnames=list(names(char1),"char1")), file="mycharacter.csv", sep=";")
 ```
 
 Now that we have simulated a tree and a character, let's erase what we have done so far from the R environment and pretend these are our data for the next sections.
@@ -78,94 +79,94 @@ rm(list=ls())
 Here is how you should import your data into R.
 
 ```{r "Import tree and data"}
-tree <- read.nexus(file="My_first_tree.tre")
-trait1 <- read.csv2(file="mytrait.csv",dec=".")
+tree <- read.nexus(file="My_first_tree.nex")
+char1 <- read.csv2(file="mycharacter.csv",dec=".")
 ```
 
-The tree format in ape contains several information and it is useful to know how to access them. For instance, the tip labels can be accessed using `tree$tip.label` and the branch lengths using `tree$edge.length`. Will will see more options in other exercises, but if you want more detailed information on how the objects "phylo" are organized, you can have a look the help file `?read.tree` or at this [document](http://ape-package.ird.fr/misc/FormatTreeR_24Oct2012.pdf) prepared by Emmanuel Paradis, the author of `ape`.
+The tree format in ape contains several facets of the data, and it is useful to know how to access them. For instance, the tip labels can be accessed using `tree$tip.label` and the branch lengths using `tree$edge.length`. We will see more options in other exercises, but if you want more detailed information on how objects of type "phylo" are organized, you can have a look at help file `?read.tree` or at this [document](http://ape-package.ird.fr/misc/FormatTreeR_24Oct2012.pdf) prepared by [Emmanuel Paradis](http://ape-package.ird.fr/ep/), the author of `ape`.
 
-## Plot trees
+## Tree visualization
 
-Plotting trees is one of the very interesting aspects of using R. Options are numerous and possibilities large. The most common function is `plot.phylo` from the ape package that has a lot of different options. I strongly suggest that you take a close look at the different options of the function `?plot.phylo`. Here is a basic example.
+Plotting trees is one of the very convenient aspects of using R. Options are numerous and possibilities large. The most common function is `plot.phylo` from the ape package, which has a lot of different options. We suggest that you take a close look at the different options of the function `?plot.phylo`. Here is a basic example:
 
 ```{r "Basic tree plotting"}
 plot(tree, type="c")
 add.scale.bar()
 ```
 
-But R is also interesting to plot characters alongside trees. If you have a categorical character, you could use it to color the tips of the phylogeny.
+R is also useful for plotting characters alongside trees. If you have a categorical character, you can use it to color the tips of the phylogeny. In the following example we generate a dummy character by randomly sampling states from a three-state character. (_Question: do you think this character will "fit" the tree well? Why (not)?_)
 
-```{r "Plot categorical parameter"}
+```{r "Plot categorical character"}
 # Generate a random categorical character
-trait2 <- as.factor(sample(c(1,2,3),size=length(tree$tip.label),replace=TRUE))
+char2 <- as.factor(sample(c(1,2,3),size=length(tree$tip.label),replace=TRUE))
 # Create color palette
 library(RColorBrewer)
-ColorPalette1 <- brewer.pal(n = length(levels(trait2)), name = "Dark2")
+ColorPalette1 <- brewer.pal(n = length(levels(char2)), name = "Dark2")
 plot(tree, type="p", use.edge.length = TRUE, label.offset=0.2,cex=1)
 tiplabels(pch=21,bg=ColorPalette1[trait2],col="black",cex=1,adj=0.6)
 op<-par(xpd=TRUE)
-legend(0,0,legend=levels(trait2),col=ColorPalette1,
-       pch=20,bty="n",cex=1,pt.cex=1.5,ncol=length(levels(trait2)))
+legend(0,0,legend=levels(char2),col=ColorPalette1,
+       pch=20,bty="n",cex=1,pt.cex=1.5,ncol=length(levels(char2)))
 par(op) #reset graphical parameters to defaults
 ```
 
-A similar result could be obtained with a continuous variable. Here, we will use the Brownian Motion model, which we will study in a further class, to simulate the continuous character. 
+A similar result can be obtained with a continuous variable. Here, we will use the Brownian Motion data: 
 
-```{r "Plot continuous parameter"}
-# Breakdown continuous trait in categories
-trait1.cat <- cut(trait1[,1],breaks=8,labels=FALSE)
+```{r "Plot continuous character"}
+# Discretize continuous character into 8 categories
+char1.cat <- cut(char1[,1],breaks=8,labels=FALSE)
 # Create color palette
 ColorPalette2 <- brewer.pal(n = 8, name = "Blues")
 # Plot the tree
 plot(tree, type="p", use.edge.length = TRUE, label.offset=0.2,cex=1)
-tiplabels(pch=21,bg=ColorPalette2[trait1.cat],col="black",cex=1,adj=0.6)
+tiplabels(pch=21,bg=ColorPalette2[char1.cat],col="black",cex=1,adj=0.6)
 op<-par(xpd=TRUE)
-legend(0,0,legend=levels(cut(trait1[,1],breaks=8)),
+legend(0,0,legend=levels(cut(char1[,1],breaks=8)),
        col=ColorPalette2,pch=20,bty="n",cex=0.7,pt.cex=1.5,ncol=4)
 par(op) #reset graphical parameters to defaults
 ```
 
-As expected from a character simlated with Brownian motion, you can see that closely related species tend to have more similar character values.
+As expected from a character simulated with Brownian motion, you can see that closely related species tend to have more similar character values. (_Question: was that also the case for the three-state character?_)
 
-Another option to represent a continuous parameter is to use the function `table.phylo4d` from the `adephylo` package to represent the trait where its values are represented by sizes of different sizes and colors. It is also possible to plot multiple characters at the same time.
+Another way to plot a continuous character is to use the function `table.phylo4d` from the `adephylo` package to visualize the character such that its values are represented by circles of different sizes and colors. With this package it is also possible to plot multiple characters at the same time, as shown here by simulating another BM character. (_Question: which of the two BM characters (char1 or char3) will have higher overall variance?_)
 
-```{r "Plot continuous parameter - table.phylo4d", message=FALSE}
+```{r "Plot continuous character - table.phylo4d", message=FALSE}
 library(phylobase)
 library(adephylo)
-trait3 <- fastBM(tree, sig2=0.1, nsim=1, internal=FALSE) #simulate a faster evolving trait
-trait.table <- data.frame(trait1=trait1[,1], trait3)
-obj <- phylo4d(tree, trait.table) # build a phylo4d object
+char3 <- fastBM(tree, sig2=0.1, nsim=1, internal=FALSE) # simulate a faster evolving character
+char.table <- data.frame(char1=char1[,1], char3)
+obj <- phylo4d(tree, char.table) # build a phylo4d object
 op <- par(mar=c(1,1,1,1))
 table.phylo4d(obj,cex.label=1,cex.symbol=1,ratio.tree=0.8,grid=FALSE,box=FALSE)
 par(op) #reset graphical parameters to defaults
 ```
 
-You can also represent a traitgram:
+You can also visualize the character as a "phenogram". (At least, that is what the `phytools` calls this visualization. This is not necessarily a term that is universally agreed upon - but what it shows is the character values along the Y-axis of the tree):
 
-```{r "traitgram"}
+```{r "phenogram"}
 require(phytools)
-phenogram(tree,trait3,spread.labels=TRUE)
+phenogram(tree,char3,spread.labels=TRUE)
 ```
 
 Finally, it is also possible to represent a tree on a 2-dimensional plot, coloring points with the categorical variable.
 
 ```{r "Phylomorphospace", message=FALSE}
-phylomorphospace(tree,trait.table)
-points(trait.table,pch=21,bg=ColorPalette1[trait2],col="black",cex=1.2,adj=1)
-legend("topleft",legend=levels(trait2),
-       col=ColorPalette1,pch=20,bty="n",cex=1,pt.cex=1.5,ncol=length(levels(trait2)))
+phylomorphospace(tree,char.table)
+points(char.table,pch=21,bg=ColorPalette1[trait2],col="black",cex=1.2,adj=1)
+legend("topleft",legend=levels(char2),
+       col=ColorPalette1,pch=20,bty="n",cex=1,pt.cex=1.5,ncol=length(levels(char2)))
 ```
 
 # Handling multiple trees
 
-In several cases, it is important to know how to handle multiple trees in R. These are normally stored in a `multiPhylo` object. Let's see an example.
+Under numerous circumstances it will be important to know how to handle multiple trees in R. These are normally stored in a `multiPhylo` object. Let's see an example.
 
 ```{r "Simulate several trees"}
 trees <- pbtree(n=15,nsim=10)
 trees
 ```
 
-You can see that the object is not the same as a phylo object. For instance, if you use the code `plot(trees)`, you will be prompted to hit enter to pass from one tree to the other. To access to individual trees, you need to use the following technique.
+You can see that the object is not the same as a phylo object. For instance, if you use the code `plot(trees)`, you will be prompted to hit enter to page from one tree to the other. To plot the individual trees, you need to use the following technique:
 
 ```{r "multiPhylo manipulation"}
 trees[[1]]
@@ -194,9 +195,9 @@ plot(root(tree,"t1"))
 cophenetic.phylo(tree)
 ```
 
-# Ploting Posterior Probability values
+# Ploting posterior probability values
 
-The package `phyloch` has very useful functions to read trees from BEAST or MrBayes. Unfortunately, it has to be install from the binaries available from [Christoph Heibl's webpage](http://www.christophheibl.de/Rpackages.html). Once ou have downloaded the package, you can install it using RStudio from the menu 'Tools>Install Packages' and select the package that you have just downloaded. You also need to install the package `XML`, which you can do using the command `install.packages("XML")`.
+The package `phyloch` has very useful functions to read trees from BEAST or MrBayes. Inconveniently, it has to be installed from the binaries available from [Christoph Heibl's webpage](http://www.christophheibl.de/Rpackages.html). Once you have downloaded the package, you can install it using RStudio from the menu 'Tools > Install Packages' and select the package that you have just downloaded. You also need to install the package `XML`, which you can do using the command `install.packages("XML")`.
 
 ## Read Bayesian trees
 
