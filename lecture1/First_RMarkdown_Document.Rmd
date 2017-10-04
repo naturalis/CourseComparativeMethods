@@ -1,6 +1,6 @@
 ---
 title: "My First Markdown Document"
-author: "Rutger Vos, based on a previous version by Simon Joly"
+author: "Simon Joly and Rutger Vos"
 date: "MeBioDA - Fall 2017"
 output:
   html_document:
