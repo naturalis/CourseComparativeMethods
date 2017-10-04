@@ -39,7 +39,7 @@ When you write text, you can have it in **bold** or in *italics*.
 > This is how you make a block quote
 ```
 
-# Frist header
+# First header
 ## Second header
 When you write text, you can have it in **bold** or in *italics*.
 
