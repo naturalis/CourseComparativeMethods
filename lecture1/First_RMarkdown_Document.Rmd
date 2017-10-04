@@ -1,7 +1,7 @@
 ---
 title: "My First Markdown Document"
-author: "Simon Joly"
-date: "BIO 6008 - Fall 2015"
+author: "Rutger Vos, based on a previous version by Simon Joly"
+date: "MeBioDA - Fall 2017"
 output:
   html_document:
     highlight: haddock
@@ -10,7 +10,7 @@ output:
     highlight: default
 ---
 
-R Markdown is a language to easily write dynamic documents from R. It is based on the very popular and simple Markdown language. It is particularly useful to create documents in which you want to include R code and R figures or results. R markdown is particularly useful to make reproducable research. Indeed, (they can be automatically regenerated whenever underlying R code or data changes). I will provide an easy example here on how to create a R Markdown document. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+R Markdown is a language to easily write dynamic documents from within an R environment. It is based on the very popular and simple Markdown language. It is particularly useful to create documents in which you want to include R code and R figures or results and that are automatically regenerated whenever underlying R code or data changes. R markdown is therefore a useful technology to promote reproducible research. Here we will provide an easy example here on how to create a R Markdown document. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
 You will need RStudio installed, as well as the packages `knitr` and `rmarkdown`. You can install them using the command
 
@@ -19,7 +19,7 @@ install.packages("rmarkdown")
 install.packages("knitr")
 ```
 
-From RStudio, you can choose `File>new file>RMarkdown` to create a new R Markdown document. The document will have a header that contains a title, the author, the date, and other informations.
+From RStudio, you can choose `File > New file > RMarkdown` to create a new R Markdown document. The document will have a header that contains a title, the author, the date, and other informations.
 
 ```{}
 ---
@@ -29,10 +29,10 @@ date: "today"
 ---
 ```
 
-You can look on the web for some the Markdown syntax, but here is a quick example of text, followed by the output the output.
+You can look on the web for some of the Markdown syntax, but here is a quick example of text, followed by the output:
 
 ```
-# Frist header
+# First header
 ## Second header
 When you write text, you can have it in **bold** or in *italics*.
 
@@ -46,7 +46,7 @@ When you write text, you can have it in **bold** or in *italics*.
 > This is how you make a block quote
 
 
-But R Markdown is especially interesting to include R code in the output document, as well as the results obtained when the code is executed. For instance, if you want to show the following code in the document:
+However, R Markdown is especially useful for including R code in the output document, as well as the results obtained when the code is executed. For instance, if you want to show the following code in the document:
 
 ```{}
 summary(cars)
@@ -60,13 +60,13 @@ summary(cars)
 
 As you can see, the command is followed by the R result in the document.
 
-And you can output the results of plot fonctions such as `plot(cars)` directly in the document:
+And you can output the results of plot functions such as `plot(cars)` directly in the document:
 
 ```{r}
 plot(cars)
 ```
 
-To export your document in html or pdf format, you just have to press the button "Knit hmtl" or "Knit pdf" in RStudio.
+To export your document in html or pdf format, you just press the button "Knit hmtl" or "Knit pdf" in RStudio.
 
 Please try to create a document of your own, reading and plotting a phylogeny for instance.
 
