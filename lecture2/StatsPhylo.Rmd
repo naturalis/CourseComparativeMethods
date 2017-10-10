@@ -22,8 +22,7 @@ Phylogenetic comparative methods were introduced by Joseph Felsenstein in 1985. 
 
 ```{r "AngiospermTree", echo=FALSE, fig.height=4, fig.width=5, fig.align='center'}
 library(ape)
-data(landplants.newick)
-landplants.tree <- read.tree(text=landplants.newick)
+landplants.tree <- read.tree("landplants.newick")
 species.to.keep <- c("Lycopodium","Asplenium","Cycas","Ginkgo","Pinus",
                      "Taxus","Amborella","Oryza","Platanus","Pisum","Fagus")
 species.to.exclude <- landplants.tree$tip.label[!(landplants.tree$tip.label %in% 
