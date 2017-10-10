@@ -277,8 +277,8 @@ h2 <- hansen(log(bimac['size']),tree,bimac['OU.LP'],sqrt.alpha=1,sigma=1,reltol=
 #Refine the fit of the OU3 model
 h2 <- update(h2,method='subplex',reltol=1e-11,parscale=c(0.1,0.1),hessian=TRUE)
 # Plot the two models
-plot(h1)
-plot(h2)
+plot(h1, bimac['OU.1'])
+plot(h2, bimac['OU.LP'])
 ```
 
 Now, let's make a table to compare the fit of the two models.
