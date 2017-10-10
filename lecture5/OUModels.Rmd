@@ -420,10 +420,10 @@ You can see that the model OU.1, that is a OU model with one regimes across the 
 ```{r "Model_summary"}
 #
 # Plot the tree with the best model
-plot(OU.2)
+plot(OU.1, OU.1)
 #
 # Output model information
-summary(OU.2)
+summary(OU.1)
 ```
 
 This conclusion is different from the conclusion reached with the PGLS (lecture 2) where a positive relationship was observed between shade tolerance and wood density. This might be explained by the loss on information involved with the conversion of the shade data into a binary vector.
