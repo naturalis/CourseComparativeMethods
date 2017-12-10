@@ -103,7 +103,7 @@ char2 <- as.factor(sample(c(1,2,3),size=length(tree$tip.label),replace=TRUE))
 library(RColorBrewer)
 ColorPalette1 <- brewer.pal(n = length(levels(char2)), name = "Dark2")
 plot(tree, type="p", use.edge.length = TRUE, label.offset=0.2,cex=1)
-tiplabels(pch=21,bg=ColorPalette1[trait2],col="black",cex=1,adj=0.6)
+tiplabels(pch=21,bg=ColorPalette1[char2],col="black",cex=1,adj=0.6)
 op<-par(xpd=TRUE)
 legend(0,0,legend=levels(char2),col=ColorPalette1,
        pch=20,bty="n",cex=1,pt.cex=1.5,ncol=length(levels(char2)))
